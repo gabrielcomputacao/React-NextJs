@@ -18,6 +18,8 @@ const Button = styled("button", {
   },
 });
 import "keen-slider/keen-slider.min.css";
+import stripe from "stripe";
+import { GetServerSideProps } from "next";
 
 export default function Home() {
   const [sliderRef] = useKeenSlider({
@@ -65,3 +67,12 @@ export default function Home() {
     </HomeContainerNext>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await stripe.prototype.products.list();
+  console.log(response.data);
+
+  return {
+    props: {},
+  };
+};
