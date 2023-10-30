@@ -15,7 +15,7 @@ const Button = styled("button", {
 });
 import "keen-slider/keen-slider.min.css";
 import { stripe } from "../lib/stripe";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 import Stripe from "stripe";
 
 interface HomeProps {
@@ -53,7 +53,19 @@ export default function Home({ products }: HomeProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+/* 
+   SSR - server side rendering
+
+export const getServerSideProps: GetServerSideProps
+
+
+  SSG - static site generation
+
+export const getStaticProps: GetStaticProps
+
+*/
+
+export const getStaticProps: GetStaticProps = async () => {
   const response = await stripe.products.list({
     expand: ["data.default_price"],
   });
@@ -64,7 +76,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
       id: prod.id,
       name: prod.name,
       imageUrl: prod.images[0],
-      price: price.unit_amount ? price.unit_amount / 100 : 10,
+      price: new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(price.unit_amount ? price.unit_amount / 100 : 10),
     };
   });
 
