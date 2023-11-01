@@ -9,6 +9,8 @@ import { stripe } from "../../lib/stripe";
 import Stripe from "stripe";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { useState } from "react";
 
 interface ProductProps {
   product: {
@@ -22,8 +24,38 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
-  function handleBuyProduct() {
-    console.log(product.defaultPriceId);
+  /*  
+    caso fosse usar uma rota interna do front end
+
+    const router = useRouter() 
+  
+  */
+
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
+    useState(false);
+
+  async function handleBuyProduct() {
+    try {
+      setIsCreatingCheckoutSession(true);
+
+      const response = await axios.post("/api/checkout", {
+        priceId: product.defaultPriceId,
+      });
+
+      const { checkoutUrl } = response.data;
+
+      /* 
+        Daria um push usando o router do proprio next para uma url para o usuario ser levado ate ela
+        Nesse caso usou o window do js porque é uma rota externa a aplicação 
+        que cairia na rota do stripe
+
+      router.push('/checkout') */
+
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      setIsCreatingCheckoutSession(false);
+      alert("falha ao conectar checkout!!");
+    }
   }
 
   const { isFallback } = useRouter();
@@ -46,7 +78,9 @@ export default function Product({ product }: ProductProps) {
         <h1>{product.name}</h1>
         <span>{product.price}</span>
         <p>{product.description}</p>
-        <button onClick={handleBuyProduct}>Comprar Agora</button>
+        <button onClick={handleBuyProduct} disabled={isCreatingCheckoutSession}>
+          Comprar Agora
+        </button>
       </ProductDetails>
     </ProductContainer>
   );
