@@ -2,6 +2,7 @@ import { ImageContainerSucces, SucessContainer } from "@/styles/pages/sucess";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { stripe } from "../lib/stripe";
+import Head from "next/head";
 
 interface SucessProps {
   customerName: string;
@@ -10,18 +11,25 @@ interface SucessProps {
 
 export default function Success({ customerName, product }: SucessProps) {
   return (
-    <SucessContainer>
-      <h1>Compra Efetuada!</h1>
+    <>
+      <Head>
+        <title> Compra Efetuada | Shop React and Next</title>
+        {/* os indexadores de busca nao indexam essa pagina */}
+        <meta name="robots" content="noindex" />
+      </Head>
+      <SucessContainer>
+        <h1>Compra Efetuada!</h1>
 
-      <ImageContainerSucces></ImageContainerSucces>
+        <ImageContainerSucces></ImageContainerSucces>
 
-      <p>
-        Parabens <strong>{customerName}</strong> ! Sua compra foi efetuada com
-        sucesso!
-      </p>
+        <p>
+          Parabens <strong>{customerName}</strong> ! Sua compra foi efetuada com
+          sucesso!
+        </p>
 
-      <Link href="/">Voltar ao Catalogo</Link>
-    </SucessContainer>
+        <Link href="/">Voltar ao Catalogo</Link>
+      </SucessContainer>
+    </>
   );
 }
 
